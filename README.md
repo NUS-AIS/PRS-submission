@@ -21,6 +21,8 @@ git switch baseline
 | 路径 | 内容 |
 |---|---|
 | `src/` | 全部代码：解压、预处理、划分、训练、Grad-CAM、出图、生成 PPT 和报告 |
+| `web/` | PULMO AI 训练结果与病例推理界面 |
+| `PULMO_UI.md` | 本地界面启动、CT 上传格式及推理说明 |
 | `data/splits.csv` | 固定的训练 / 验证 / 测试划分（按病人组，seed 42），**不要重新划分** |
 | `data/raw/OMIX014539-08.csv` | 临床数据表（原始文件，28 KB） |
 | `results/` | 所有结果的 JSON / CSV |
@@ -47,16 +49,18 @@ gh release download baseline-v1 -R NUS-AIS/PRS_project
 
 **有了 `data/processed/`，不需要原始 CT 也能直接训练。** 只有修改预处理代码时，才需要原始 CT。
 
-## 当前结果（未调参的基线）
+## 当前结果（2026-10 本地复现，未调参的基线）
+
+以下分数对应当前 `results/` 与 `figures/`，使用原有固定划分，在 RTX 5070 Laptop 上重新训练。历史首次答辩材料未重新生成，其分数可能不同。`baseline-v1` Release 中的模型权重仍为历史版本，本次未更新 Release；要得到与当前结果匹配的权重，请重新训练，勿将历史权重与这些指标视为同一次运行。
 
 测试集 macro-F1（随机猜约 0.33）：
 
 | 模型 | 结果 |
 |---|---|
 | 只用临床（随机森林，5 折交叉验证） | 0.569 ± 0.035 |
-| 只用 CT（ResNet-18，3 个种子） | **0.642 ± 0.014** |
-| CT + 临床融合（3 个种子） | 0.618 ± 0.020 |
-| 只用 CT，冻结骨干 | 0.468 ± 0.022（欠拟合，见 `Frozen vs Fine-tuned Backbone.md`） |
+| 只用 CT（ResNet-18，3 个种子） | **0.595 ± 0.054** |
+| CT + 临床融合（3 个种子） | 0.593 ± 0.045 |
+| 只用 CT，冻结骨干 | 0.501 ± 0.012（欠拟合，见 `Frozen vs Fine-tuned Backbone.md`） |
 
 几点说明：
 - 融合暂时没有超过只用 CT。
@@ -79,7 +83,17 @@ gh release download baseline-v1 -R NUS-AIS/PRS_project
 6. **训练：** `bash src/run_ct_baselines.sh`。只用 CT 和融合各跑 3 个种子，之后自动做 Grad-CAM、出图、生成 PPT，总共约 25 分钟。单独跑一次：`python src/train_ct.py --mode ct --seed 0`；冻结骨干加 `--freeze --lr 1e-3`。
 7. **报告：** `python src/report_freeze.py` 生成冻结对比报告；`python src/build_deck.py` 重新生成 PPT 和讲稿。
 
-## 协作约定
+## 本地推理界面
+
+安装基线依赖、兼容的 PyTorch 和 `pip install -r requirements-ui.txt`。准备与当前结果对应的 `runs/` 权重后，在仓库根目录启动：
+
+```sh
+python -m uvicorn pulmo_server:app --app-dir src --host 127.0.0.1 --port 8765
+```
+
+打开 http://127.0.0.1:8765 。支持上传 `.nii` / `.nii.gz` 三维 CT、CT-only / 临床融合推理、切片浏览和 Grad-CAM。验证集演示还需要 `data/processed/`。详细说明见 [PULMO_UI.md](PULMO_UI.md)。仅供研究使用。
+
+## 文件提交约定
 
 - 不重新划分数据，所有人都用 `data/splits.csv`。
 - 改了预处理（比如遮肺），要重跑基线再比较。

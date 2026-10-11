@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PULMO AI · Research Workspace</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="#training"><svg viewBox="0 0 56 56" aria-hidden="true"><path d="M26 6v23M30 6v23M26 23c-4-7-10-10-14-4C7 25 3 42 8 47c5 4 14-1 17-5V23m5 0c4-7 10-10 14-4 5 6 9 23 4 28-5 4-14-1-17-5V23"/></svg><span>PULMO AI<small>RESEARCH WORKSPACE</small></span></a>
+  <nav aria-label="Main navigation"><button class="nav active" data-page="training"><span>▥</span>Training Results</button><button class="nav" data-page="inference"><span>▤</span>Case Inference</button></nav>
+  <div class="side-footer"><i></i> LOCAL INFERENCE<small>For research use only</small><small>Baseline · ResNet-18</small></div>
+</aside>
+<main>
+ <div id="notice" role="alert" hidden></div>
+ <section id="training" class="page">
+  <header><div><h1>Training Overview</h1><p>Multimodal Classification · ResNet-18 + Clinical MLP</p></div><div class="actions"><select id="training-model" aria-label="Training model"></select><button id="export-training" class="glow">⇩ &nbsp; Export Report</button></div></header>
+  <div class="metrics"><article><label>Test Macro F1</label><strong id="f1">—</strong><span>▥</span></article><article><label>Test Balanced Accuracy</label><strong id="accuracy">—</strong><span>◎</span></article><article><label>Best Validation Epoch</label><strong id="epoch">—</strong><span>↗</span></article><article><label>Training Scans</label><strong id="scans">—</strong><span>♧</span></article></div>
+  <div class="chart-grid"><article class="panel"><div class="panel-title"><h2>Training Loss & Validation Macro F1</h2><div class="legend"><span class="blue">Training loss</span><span>Validation F1</span></div></div><p class="hint">Separate axes: loss on the left, macro F1 on the right.</p><canvas id="learning" role="img" aria-label="Training loss and validation macro F1 by epoch"></canvas></article><article class="panel"><h2>Confusion Matrix · Test Set</h2><div id="matrix"></div><p class="hint centered">Rows: actual · Columns: predicted</p></article></div>
+  <div class="bottom-grid"><article class="panel"><h2>Model Comparison</h2><p class="hint">Local runs · full training set · basic augmentation</p><div class="table-wrap"><table><thead><tr><th>Model</th><th>Seed</th><th>Validation F1</th><th>Test F1</th></tr></thead><tbody id="comparison"></tbody></table></div></article><article class="panel"><h2>Across Random Seeds</h2><div class="legend"><span class="blue">CT only</span><span>Multimodal fusion</span></div><p class="hint">Test macro F1 · each dot is one completed run</p><canvas id="seeds" role="img" aria-label="Test macro F1 for CT-only and fusion models over three random seeds"></canvas><p class="hint">No training-size experiments are available for this baseline.</p></article></div>
+  <footer><span id="split"></span><span>Actual local results · uncalibrated baseline</span></footer>
+ </section>
+ <section id="inference" class="page" hidden>
+  <header><div><h1>Case Inference</h1><p>Chest CT + Clinical Data</p></div><div class="actions"><select id="inference-model" aria-label="Inference model"></select><label class="glow upload-label" for="file">⇧ &nbsp; Import CT</label><input type="file" id="file" accept=".nii,.nii.gz" hidden></div></header>
+  <div class="case-toolbar"><span id="case-label">No CT loaded</span><div><select id="demo" aria-label="Validation demo case"><option value="">Select a validation case</option></select><button id="load-demo">Load Demo</button></div></div>
+  <div class="inference-grid">
+   <article class="panel viewer"><div class="panel-title"><h2>CT Viewer</h2><label class="toggle"><input id="overlay" type="checkbox" disabled> Grad-CAM</label></div>
+    <div id="scan-empty" class="drop-zone"><div class="scan-symbol">⊕</div><h3>Import a chest CT volume</h3><p>Drop a .nii or .nii.gz file here</p><button id="browse">Choose CT File</button><small>Hounsfield units · 3D volume · up to 200 MB</small></div>
+    <div id="scan-view" hidden><img id="scan" alt="Preprocessed axial CT slice"><div class="slice-control"><label id="slice-label" for="slice">Slice 8 / 16</label><input id="slice" type="range" min="0" max="15" value="7"></div></div>
+    <div class="viewer-caption"><span>Lung window</span><span>16 sampled positions · 2.5D</span></div><p class="hint">Viewer shows cropped model inputs. Heatmap indicates model attention, not a lesion boundary.</p>
+   </article>
+   <article class="panel clinical"><h2>Clinical Inputs</h2><p id="clinical-help" class="hint">CT-only mode does not use clinical inputs.</p><form id="clinical-form"><div id="fields"></div></form><button id="predict" class="glow primary" disabled>▶ &nbsp; Run Inference</button><p id="progress" class="hint" aria-live="polite"></p></article>
+   <article class="panel prediction"><div class="panel-title"><h2>Prediction Results</h2><span class="badge">RESEARCH</span></div><div id="prediction-empty" class="result-empty"><div>◎</div><h3>Ready when you are</h3><p>Load a CT and run inference to see real model outputs.</p></div><div id="prediction-data" hidden><div class="predicted"><small>Predicted class</small><h3 id="predicted-class"></h3></div><div id="probabilities"></div><div class="warning">⚠ Research output · clinical review required</div><p class="hint">Probabilities are uncalibrated model scores. No validated uncertainty threshold is available.</p><dl><dt>Severity</dt><dd>Not assessed</dd><dt>Localization</dt><dd>Grad-CAM explanation only</dd></dl><button id="export-case">⇩ Export Prediction</button></div><p class="research-note">Research use only. Not a clinical diagnosis.</p></article>
+  </div>
+ </section>
+</main><script src="/static/app.js"></script></body></html>
