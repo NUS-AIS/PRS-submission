@@ -4,17 +4,13 @@ import json
 import threading
 
 import numpy as np
-import pandas as pd
 import torch
 from torch import nn
 from torch.nn import functional as F
 from torchvision.models import resnet18
-from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from common import ROOT, RESULTS, SPLIT_CSV, NUMERIC, BINARY, CATEGORICAL, load_clinical
+from common import ROOT, RESULTS
+from pulmo_clinical import clinical_setup, clinical_vector, clinical_width
 
 LABELS = ['Aspergillus infection', 'Other fungal infection', 'Non-fungal infection']
 LOCK = threading.Lock()
@@ -33,18 +29,6 @@ def catalog():
                     name=f'{"CT only" if mode == "ct" else "Multimodal fusion"} · seed {seed}',
                     **{k: r[k] for k in ('history', 'best_val_f1', 'test_macro_f1', 'test_balanced_acc', 'test_cm')}))
     return records
-
-
-@lru_cache(maxsize=1)
-def clinical_setup():
-    df = load_clinical().join(pd.read_csv(SPLIT_CSV, index_col=0)['split'])
-    pre = ColumnTransformer([
-        ('num', make_pipeline(SimpleImputer(strategy='median'), StandardScaler()), NUMERIC),
-        ('bin', 'passthrough', BINARY),
-        ('cat', OneHotEncoder(handle_unknown='ignore'), CATEGORICAL),
-    ])
-    pre.fit(df.loc[df.split == 'train', NUMERIC + BINARY + CATEGORICAL])
-    return df, pre
 
 
 class Net(nn.Module):
@@ -70,32 +54,10 @@ def load_model(tag):
     available = {r['id']: r for r in catalog()}
     if tag not in available:
         raise ValueError('Select an available trained model.')
-    df, pre = clinical_setup()
-    n = pre.transform(df.iloc[:1][NUMERIC + BINARY + CATEGORICAL]).shape[1]
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model = Net(available[tag]['mode'] == 'fusion', n)
+    model = Net(available[tag]['mode'] == 'fusion', clinical_width())
     model.load_state_dict(torch.load(ROOT / 'runs' / f'{tag}.pt', map_location='cpu', weights_only=True), strict=True)
     return model.to(device).eval(), device
-
-
-def clinical_vector(values):
-    row = {}
-    for name in NUMERIC:
-        val = values.get(name)
-        row[name] = np.nan if val is None or val == '' else float(val)
-        if not np.isnan(row[name]) and (not np.isfinite(row[name]) or row[name] < 0):
-            raise ValueError(f'{name} must be a non-negative number or left blank.')
-    if not np.isnan(row['Age']) and row['Age'] > 120:
-        raise ValueError('Age must be between 0 and 120.')
-    for name in BINARY:
-        if values.get(name) not in (0, 1):
-            raise ValueError(f'Please specify {name}. This model has no unknown encoding for binary fields.')
-        row[name] = int(values[name])
-    if values.get('Gender') not in ('M', 'F'):
-        raise ValueError('Please specify sex as encoded by the training dataset (M/F).')
-    row['Gender'] = values['Gender']
-    _, pre = clinical_setup()
-    return pre.transform(pd.DataFrame([row])[NUMERIC + BINARY + CATEGORICAL]).astype(np.float32)
 
 
 def infer(stack, tag, values, explain=True):
