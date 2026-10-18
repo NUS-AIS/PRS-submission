@@ -1,0 +1,570 @@
+case_id,Diagnosis_Class,label,group,split
+1,Non-Aspergillus Fungi,1,0,train
+2,Non-Aspergillus Fungi,1,0,train
+3,Non-Aspergillus Fungi,1,1,test
+4,Non-Aspergillus Fungi,1,2,val
+5,Non-Aspergillus Fungi,1,3,train
+6,Non-Aspergillus Fungi,1,4,train
+7,Non-Aspergillus Fungi,1,4,train
+8,Non-Aspergillus Fungi,1,5,train
+9,Non-Aspergillus Fungi,1,6,train
+10,Non-Aspergillus Fungi,1,6,train
+11,Non-Aspergillus Fungi,1,7,train
+12,Non-Aspergillus Fungi,1,7,train
+13,Non-Aspergillus Fungi,1,8,train
+14,Non-Aspergillus Fungi,1,8,train
+15,Non-Aspergillus Fungi,1,8,train
+16,Non-Aspergillus Fungi,1,9,train
+17,Non-Aspergillus Fungi,1,9,train
+18,Non-Aspergillus Fungi,1,10,train
+19,Non-Aspergillus Fungi,1,11,val
+20,Non-Aspergillus Fungi,1,12,val
+21,Non-Aspergillus Fungi,1,12,val
+22,Non-Aspergillus Fungi,1,12,val
+23,Non-Aspergillus Fungi,1,13,train
+24,Non-Aspergillus Fungi,1,14,train
+25,Non-Aspergillus Fungi,1,14,train
+26,Non-Aspergillus Fungi,1,15,train
+27,Non-Aspergillus Fungi,1,16,train
+28,Non-Aspergillus Fungi,1,16,train
+29,Non-Aspergillus Fungi,1,17,train
+30,Non-Aspergillus Fungi,1,18,train
+31,Non-Aspergillus Fungi,1,19,train
+32,Non-Aspergillus Fungi,1,20,train
+33,Non-Aspergillus Fungi,1,21,train
+34,Non-Aspergillus Fungi,1,22,train
+35,Non-Aspergillus Fungi,1,23,train
+36,Non-Aspergillus Fungi,1,24,train
+37,Non-Aspergillus Fungi,1,25,train
+38,Non-Aspergillus Fungi,1,26,test
+39,Non-Aspergillus Fungi,1,27,val
+40,Non-Aspergillus Fungi,1,28,val
+41,Non-Aspergillus Fungi,1,29,val
+42,Non-Aspergillus Fungi,1,30,train
+43,Non-Aspergillus Fungi,1,31,train
+44,Non-Aspergillus Fungi,1,32,train
+45,Non-Aspergillus Fungi,1,33,train
+46,Non-Aspergillus Fungi,1,34,train
+47,Non-Aspergillus Fungi,1,35,val
+48,Non-Aspergillus Fungi,1,36,train
+49,Non-Aspergillus Fungi,1,37,train
+50,Non-Aspergillus Fungi,1,38,test
+51,Non-Aspergillus Fungi,1,39,train
+52,Non-Aspergillus Fungi,1,39,train
+53,Non-Aspergillus Fungi,1,40,train
+54,Non-Aspergillus Fungi,1,40,train
+55,Non-Aspergillus Fungi,1,41,train
+56,Non-Aspergillus Fungi,1,42,train
+57,Non-Aspergillus Fungi,1,43,test
+58,Non-Aspergillus Fungi,1,44,test
+59,Non-Aspergillus Fungi,1,45,train
+60,Non-Aspergillus Fungi,1,46,train
+61,Non-Aspergillus Fungi,1,47,train
+62,Non-Aspergillus Fungi,1,48,train
+63,Non-Aspergillus Fungi,1,49,train
+64,Non-Aspergillus Fungi,1,50,test
+65,Non-Aspergillus Fungi,1,51,val
+66,Non-Aspergillus Fungi,1,52,train
+67,Non-Aspergillus Fungi,1,53,val
+68,Non-Aspergillus Fungi,1,54,train
+69,Non-Aspergillus Fungi,1,54,train
+70,Non-Aspergillus Fungi,1,55,train
+71,Aspergillus,0,56,train
+72,Aspergillus,0,57,val
+73,Aspergillus,0,58,val
+74,Aspergillus,0,59,train
+75,Aspergillus,0,60,train
+76,Aspergillus,0,61,train
+77,Aspergillus,0,62,test
+78,Aspergillus,0,63,train
+79,Aspergillus,0,64,train
+80,Aspergillus,0,65,train
+81,Aspergillus,0,66,train
+82,Aspergillus,0,67,train
+83,Aspergillus,0,68,train
+84,Aspergillus,0,69,train
+85,Aspergillus,0,70,val
+86,Aspergillus,0,71,train
+87,Aspergillus,0,72,train
+88,Aspergillus,0,73,train
+89,Aspergillus,0,74,train
+90,Aspergillus,0,75,train
+91,Aspergillus,0,76,test
+92,Aspergillus,0,77,val
+93,Aspergillus,0,78,train
+94,Aspergillus,0,79,train
+95,Aspergillus,0,80,train
+96,Aspergillus,0,81,train
+97,Aspergillus,0,82,train
+98,Aspergillus,0,83,train
+99,Aspergillus,0,84,train
+100,Aspergillus,0,85,train
+101,Aspergillus,0,86,train
+102,Aspergillus,0,87,train
+103,Aspergillus,0,88,train
+104,Aspergillus,0,89,train
+105,Aspergillus,0,90,train
+106,Aspergillus,0,91,train
+107,Aspergillus,0,92,train
+108,Aspergillus,0,93,val
+109,Aspergillus,0,94,test
+110,Aspergillus,0,95,train
+111,Aspergillus,0,96,train
+112,Aspergillus,0,97,val
+113,Aspergillus,0,98,train
+114,Aspergillus,0,99,train
+115,Aspergillus,0,100,train
+116,Aspergillus,0,101,train
+117,Aspergillus,0,102,val
+118,Aspergillus,0,103,train
+119,Aspergillus,0,104,val
+120,Aspergillus,0,105,train
+121,Aspergillus,0,106,val
+122,Aspergillus,0,107,train
+123,Aspergillus,0,108,test
+124,Aspergillus,0,109,train
+125,Aspergillus,0,110,test
+126,Aspergillus,0,111,train
+127,Aspergillus,0,112,train
+128,Aspergillus,0,113,test
+129,Aspergillus,0,114,test
+130,Aspergillus,0,115,test
+131,Aspergillus,0,116,train
+132,Aspergillus,0,117,test
+133,Aspergillus,0,118,train
+134,Aspergillus,0,119,val
+135,Aspergillus,0,120,train
+136,Aspergillus,0,121,train
+137,Aspergillus,0,122,train
+138,Aspergillus,0,123,train
+139,Aspergillus,0,124,train
+140,Aspergillus,0,125,train
+141,Aspergillus,0,125,train
+142,Aspergillus,0,126,train
+143,Aspergillus,0,127,val
+144,Aspergillus,0,128,val
+145,Aspergillus,0,129,train
+146,Aspergillus,0,130,test
+147,Aspergillus,0,131,train
+148,Aspergillus,0,132,train
+149,Aspergillus,0,133,train
+150,Aspergillus,0,134,train
+151,Aspergillus,0,135,val
+152,Aspergillus,0,136,train
+153,Aspergillus,0,137,train
+154,Aspergillus,0,138,train
+155,Non-Aspergillus Fungi,1,139,train
+156,Non-Aspergillus Fungi,1,140,train
+157,Non-Aspergillus Fungi,1,141,val
+158,Non-Aspergillus Fungi,1,142,train
+159,Non-Aspergillus Fungi,1,143,train
+160,Non-Aspergillus Fungi,1,143,train
+161,Non-Aspergillus Fungi,1,144,test
+162,Non-Aspergillus Fungi,1,145,train
+163,Non-Aspergillus Fungi,1,146,train
+164,Non-Aspergillus Fungi,1,147,train
+165,Non-Aspergillus Fungi,1,148,test
+166,Non-Aspergillus Fungi,1,149,train
+167,Non-Aspergillus Fungi,1,150,train
+168,Non-Aspergillus Fungi,1,151,train
+169,Non-Aspergillus Fungi,1,152,train
+170,Non-Aspergillus Fungi,1,153,test
+171,Non-Aspergillus Fungi,1,154,train
+172,Non-Aspergillus Fungi,1,155,train
+173,Non-Aspergillus Fungi,1,156,train
+174,Non-Aspergillus Fungi,1,156,train
+175,Non-Aspergillus Fungi,1,157,test
+176,Non-Aspergillus Fungi,1,158,train
+177,Non-Aspergillus Fungi,1,158,train
+178,Non-Aspergillus Fungi,1,159,train
+179,Non-Aspergillus Fungi,1,160,train
+180,Non-Aspergillus Fungi,1,160,train
+181,Non-Aspergillus Fungi,1,161,train
+182,Non-Aspergillus Fungi,1,162,train
+183,Non-Aspergillus Fungi,1,163,test
+184,Non-Aspergillus Fungi,1,164,train
+185,Non-Aspergillus Fungi,1,165,train
+186,Non-Aspergillus Fungi,1,166,val
+187,Non-Aspergillus Fungi,1,167,train
+188,Non-Aspergillus Fungi,1,168,val
+189,Non-Aspergillus Fungi,1,169,val
+190,Aspergillus,0,170,train
+191,Aspergillus,0,171,train
+192,Aspergillus,0,172,train
+193,Aspergillus,0,173,train
+194,Aspergillus,0,174,test
+195,Aspergillus,0,175,test
+196,Aspergillus,0,176,train
+197,Aspergillus,0,177,test
+198,Aspergillus,0,178,test
+199,Aspergillus,0,179,test
+200,Aspergillus,0,180,train
+201,Non-Aspergillus Fungi,1,181,train
+202,Non-Aspergillus Fungi,1,182,train
+203,Non-Aspergillus Fungi,1,183,train
+204,Non-Aspergillus Fungi,1,184,train
+205,Non-Aspergillus Fungi,1,185,val
+206,Non-Aspergillus Fungi,1,186,train
+207,Non-Aspergillus Fungi,1,187,train
+208,Non-Aspergillus Fungi,1,188,train
+209,Non-Aspergillus Fungi,1,189,test
+210,Non-Aspergillus Fungi,1,190,train
+211,Non-Aspergillus Fungi,1,191,train
+212,Non-Aspergillus Fungi,1,192,train
+213,Non-Aspergillus Fungi,1,193,train
+214,Non-Aspergillus Fungi,1,194,val
+215,Non-Aspergillus Fungi,1,195,train
+216,Non-Aspergillus Fungi,1,196,test
+217,Non-Aspergillus Fungi,1,197,train
+218,Non-Aspergillus Fungi,1,198,train
+219,Non-Aspergillus Fungi,1,199,train
+220,Non-Aspergillus Fungi,1,200,train
+221,Non-Aspergillus Fungi,1,201,test
+222,Non-Aspergillus Fungi,1,202,train
+223,Non-Aspergillus Fungi,1,203,train
+224,Non-Aspergillus Fungi,1,204,train
+225,Non-Aspergillus Fungi,1,205,train
+226,Non-Aspergillus Fungi,1,206,val
+227,Non-Aspergillus Fungi,1,207,train
+228,Non-Aspergillus Fungi,1,208,train
+229,Non-Aspergillus Fungi,1,209,test
+230,Non-Aspergillus Fungi,1,210,train
+231,Non-Aspergillus Fungi,1,211,test
+232,Non-Aspergillus Fungi,1,212,train
+233,Non-Aspergillus Fungi,1,213,train
+234,Non-Aspergillus Fungi,1,214,val
+235,Non-Aspergillus Fungi,1,215,train
+236,Non-Aspergillus Fungi,1,216,train
+237,Non-Aspergillus Fungi,1,217,train
+238,Non-Aspergillus Fungi,1,218,train
+239,Non-Aspergillus Fungi,1,219,val
+240,Non-Aspergillus Fungi,1,220,train
+241,Non-Aspergillus Fungi,1,221,test
+242,Non-Aspergillus Fungi,1,222,test
+243,Non-Aspergillus Fungi,1,223,test
+244,Non-Aspergillus Fungi,1,224,test
+245,Non-Aspergillus Fungi,1,225,train
+246,Non-Aspergillus Fungi,1,226,train
+247,Non-Aspergillus Fungi,1,227,val
+248,Non-Aspergillus Fungi,1,228,train
+249,Non-Aspergillus Fungi,1,229,train
+250,Non-Aspergillus Fungi,1,230,test
+251,Non-Aspergillus Fungi,1,231,train
+252,Non-Aspergillus Fungi,1,232,train
+253,Non-Aspergillus Fungi,1,233,train
+254,Non-Aspergillus Fungi,1,234,test
+255,Non-Aspergillus Fungi,1,235,train
+256,Non-Aspergillus Fungi,1,236,val
+257,Aspergillus,0,237,train
+258,Aspergillus,0,238,train
+259,Aspergillus,0,239,train
+260,Aspergillus,0,240,train
+261,Non-Fungi,2,241,train
+262,Non-Fungi,2,242,train
+263,Aspergillus,0,243,train
+264,Non-Aspergillus Fungi,1,244,train
+265,Aspergillus,0,245,test
+266,Aspergillus,0,246,val
+267,Aspergillus,0,247,train
+268,Aspergillus,0,248,test
+269,Aspergillus,0,249,val
+270,Aspergillus,0,250,train
+271,Aspergillus,0,251,train
+272,Aspergillus,0,252,val
+273,Aspergillus,0,253,test
+274,Aspergillus,0,254,train
+275,Aspergillus,0,255,train
+276,Aspergillus,0,256,train
+277,Non-Fungi,2,257,train
+278,Non-Fungi,2,258,train
+279,Non-Fungi,2,259,train
+280,Non-Fungi,2,260,train
+281,Non-Fungi,2,261,train
+282,Non-Fungi,2,262,val
+283,Non-Fungi,2,263,train
+284,Non-Fungi,2,264,train
+285,Non-Fungi,2,265,train
+286,Non-Fungi,2,266,train
+287,Non-Fungi,2,267,val
+288,Non-Fungi,2,268,train
+289,Non-Fungi,2,269,train
+290,Non-Fungi,2,270,train
+291,Non-Fungi,2,271,test
+292,Non-Fungi,2,272,test
+293,Non-Fungi,2,273,train
+294,Non-Fungi,2,274,val
+295,Non-Fungi,2,275,train
+296,Non-Fungi,2,276,train
+297,Non-Fungi,2,277,train
+298,Non-Fungi,2,278,val
+299,Non-Fungi,2,279,test
+300,Non-Fungi,2,280,test
+301,Non-Fungi,2,281,train
+302,Non-Fungi,2,282,train
+303,Non-Fungi,2,283,train
+304,Non-Fungi,2,284,train
+305,Non-Fungi,2,285,train
+306,Non-Fungi,2,286,test
+307,Non-Fungi,2,287,train
+308,Non-Fungi,2,288,train
+309,Non-Fungi,2,289,train
+310,Non-Fungi,2,290,test
+311,Non-Fungi,2,291,train
+312,Non-Fungi,2,292,train
+313,Non-Fungi,2,293,test
+314,Non-Fungi,2,294,train
+315,Non-Fungi,2,295,train
+316,Non-Fungi,2,296,train
+317,Non-Fungi,2,297,val
+318,Non-Fungi,2,298,train
+319,Non-Fungi,2,299,train
+320,Non-Fungi,2,300,train
+321,Non-Fungi,2,301,train
+322,Non-Aspergillus Fungi,1,302,val
+323,Non-Aspergillus Fungi,1,303,train
+324,Non-Aspergillus Fungi,1,304,train
+325,Non-Aspergillus Fungi,1,305,train
+326,Non-Aspergillus Fungi,1,306,train
+327,Non-Aspergillus Fungi,1,307,val
+328,Non-Aspergillus Fungi,1,308,val
+329,Non-Aspergillus Fungi,1,309,val
+330,Non-Aspergillus Fungi,1,310,train
+331,Non-Aspergillus Fungi,1,311,train
+332,Non-Aspergillus Fungi,1,312,test
+333,Non-Aspergillus Fungi,1,313,test
+334,Non-Aspergillus Fungi,1,314,train
+335,Non-Aspergillus Fungi,1,315,train
+336,Non-Aspergillus Fungi,1,316,train
+337,Non-Aspergillus Fungi,1,317,val
+338,Non-Aspergillus Fungi,1,318,train
+339,Non-Aspergillus Fungi,1,319,train
+340,Non-Aspergillus Fungi,1,320,train
+341,Non-Aspergillus Fungi,1,321,val
+342,Non-Aspergillus Fungi,1,322,val
+343,Non-Aspergillus Fungi,1,323,train
+344,Non-Aspergillus Fungi,1,324,train
+345,Non-Aspergillus Fungi,1,325,train
+346,Non-Aspergillus Fungi,1,326,train
+347,Non-Fungi,2,327,train
+348,Non-Fungi,2,328,test
+349,Non-Fungi,2,329,val
+350,Non-Fungi,2,330,val
+351,Non-Fungi,2,331,train
+352,Non-Fungi,2,332,train
+353,Non-Fungi,2,333,test
+354,Non-Fungi,2,334,train
+355,Non-Fungi,2,335,train
+356,Non-Fungi,2,336,test
+357,Non-Fungi,2,337,test
+358,Non-Fungi,2,338,train
+359,Non-Fungi,2,339,test
+360,Non-Fungi,2,340,train
+361,Non-Fungi,2,341,train
+362,Non-Fungi,2,342,test
+363,Non-Fungi,2,343,train
+364,Non-Fungi,2,344,val
+365,Non-Fungi,2,345,val
+366,Non-Fungi,2,346,test
+367,Non-Fungi,2,347,train
+368,Non-Fungi,2,348,train
+369,Non-Fungi,2,349,train
+370,Non-Fungi,2,350,train
+371,Non-Fungi,2,351,train
+372,Non-Fungi,2,352,train
+373,Non-Fungi,2,353,train
+374,Non-Fungi,2,354,train
+375,Non-Fungi,2,355,train
+376,Non-Fungi,2,356,train
+377,Non-Fungi,2,357,train
+378,Non-Fungi,2,358,train
+379,Non-Fungi,2,359,train
+380,Non-Fungi,2,360,train
+381,Non-Fungi,2,361,train
+382,Non-Fungi,2,362,train
+383,Non-Fungi,2,363,train
+384,Non-Fungi,2,364,train
+385,Non-Fungi,2,365,test
+386,Non-Fungi,2,366,train
+387,Non-Fungi,2,367,train
+388,Non-Fungi,2,368,train
+389,Non-Fungi,2,369,train
+390,Non-Fungi,2,370,train
+391,Non-Fungi,2,371,test
+392,Non-Fungi,2,372,train
+393,Non-Fungi,2,373,train
+394,Non-Fungi,2,374,val
+395,Non-Fungi,2,375,train
+396,Non-Fungi,2,376,train
+397,Non-Fungi,2,377,test
+398,Non-Fungi,2,378,val
+399,Non-Fungi,2,379,train
+400,Non-Fungi,2,380,train
+401,Non-Fungi,2,381,train
+402,Non-Fungi,2,382,train
+403,Non-Fungi,2,383,val
+404,Non-Fungi,2,384,train
+405,Non-Fungi,2,385,train
+406,Non-Fungi,2,386,train
+407,Non-Fungi,2,387,train
+408,Non-Fungi,2,388,train
+409,Non-Fungi,2,389,train
+410,Non-Fungi,2,390,train
+411,Non-Fungi,2,391,train
+412,Non-Fungi,2,392,train
+413,Non-Fungi,2,393,test
+414,Non-Fungi,2,394,test
+415,Non-Fungi,2,395,val
+416,Non-Fungi,2,396,train
+417,Non-Fungi,2,397,train
+418,Non-Fungi,2,398,train
+419,Non-Fungi,2,399,train
+420,Non-Fungi,2,400,train
+421,Non-Fungi,2,401,train
+422,Non-Fungi,2,402,train
+423,Non-Fungi,2,403,train
+424,Non-Fungi,2,404,val
+425,Non-Fungi,2,405,train
+426,Non-Fungi,2,406,val
+427,Non-Fungi,2,407,test
+428,Non-Fungi,2,408,train
+429,Non-Fungi,2,409,val
+430,Non-Fungi,2,410,train
+431,Non-Fungi,2,411,train
+432,Non-Fungi,2,412,train
+433,Non-Aspergillus Fungi,1,413,test
+434,Non-Aspergillus Fungi,1,414,test
+435,Non-Aspergillus Fungi,1,415,train
+436,Non-Aspergillus Fungi,1,416,train
+437,Non-Aspergillus Fungi,1,417,val
+438,Aspergillus,0,418,train
+439,Aspergillus,0,419,train
+440,Aspergillus,0,420,train
+441,Aspergillus,0,421,train
+442,Aspergillus,0,422,train
+443,Aspergillus,0,423,test
+444,Aspergillus,0,424,train
+445,Aspergillus,0,425,train
+446,Aspergillus,0,426,test
+447,Aspergillus,0,427,val
+448,Aspergillus,0,428,val
+449,Aspergillus,0,429,train
+450,Aspergillus,0,430,train
+451,Aspergillus,0,431,train
+452,Aspergillus,0,432,train
+453,Aspergillus,0,433,train
+454,Aspergillus,0,434,train
+455,Aspergillus,0,435,train
+456,Aspergillus,0,436,val
+457,Aspergillus,0,437,test
+458,Aspergillus,0,438,train
+459,Aspergillus,0,439,val
+460,Aspergillus,0,440,train
+461,Aspergillus,0,441,train
+462,Aspergillus,0,442,train
+463,Aspergillus,0,443,train
+464,Aspergillus,0,444,train
+465,Aspergillus,0,445,train
+466,Aspergillus,0,446,train
+467,Aspergillus,0,447,train
+468,Aspergillus,0,448,test
+469,Aspergillus,0,449,val
+470,Non-Aspergillus Fungi,1,450,train
+471,Non-Aspergillus Fungi,1,451,test
+472,Non-Aspergillus Fungi,1,452,train
+473,Non-Aspergillus Fungi,1,453,train
+474,Non-Aspergillus Fungi,1,454,train
+475,Non-Aspergillus Fungi,1,455,test
+476,Aspergillus,0,456,train
+477,Aspergillus,0,457,train
+478,Aspergillus,0,458,train
+479,Aspergillus,0,459,test
+480,Aspergillus,0,460,train
+481,Aspergillus,0,461,train
+482,Non-Aspergillus Fungi,1,462,train
+483,Aspergillus,0,463,val
+484,Aspergillus,0,464,train
+485,Non-Aspergillus Fungi,1,465,train
+486,Non-Aspergillus Fungi,1,466,train
+487,Non-Aspergillus Fungi,1,467,train
+488,Non-Aspergillus Fungi,1,468,train
+489,Non-Aspergillus Fungi,1,468,train
+490,Non-Aspergillus Fungi,1,468,train
+491,Non-Aspergillus Fungi,1,469,train
+492,Non-Aspergillus Fungi,1,470,train
+493,Non-Fungi,2,471,train
+494,Non-Fungi,2,472,val
+495,Non-Fungi,2,473,train
+496,Non-Fungi,2,474,test
+497,Non-Fungi,2,475,train
+498,Non-Fungi,2,476,train
+499,Non-Fungi,2,477,train
+500,Non-Fungi,2,478,train
+501,Non-Fungi,2,479,val
+502,Non-Fungi,2,480,val
+503,Non-Fungi,2,481,val
+504,Non-Fungi,2,482,train
+505,Non-Fungi,2,483,train
+506,Non-Fungi,2,484,train
+507,Non-Fungi,2,485,train
+508,Non-Fungi,2,486,test
+509,Non-Fungi,2,487,train
+510,Non-Fungi,2,488,val
+511,Non-Fungi,2,489,test
+512,Non-Fungi,2,490,val
+513,Non-Fungi,2,491,train
+514,Non-Fungi,2,492,test
+515,Non-Fungi,2,493,train
+516,Non-Fungi,2,494,train
+517,Non-Fungi,2,495,train
+518,Non-Fungi,2,496,train
+519,Non-Fungi,2,497,test
+520,Non-Fungi,2,498,val
+521,Non-Fungi,2,499,train
+522,Non-Fungi,2,500,train
+523,Non-Fungi,2,501,train
+524,Non-Fungi,2,502,train
+525,Non-Fungi,2,503,train
+526,Non-Fungi,2,504,train
+527,Non-Fungi,2,505,train
+528,Non-Fungi,2,506,train
+529,Non-Fungi,2,507,val
+530,Non-Fungi,2,508,val
+531,Non-Fungi,2,509,train
+532,Non-Fungi,2,510,train
+533,Non-Fungi,2,511,test
+534,Non-Fungi,2,512,val
+535,Non-Fungi,2,513,val
+536,Non-Fungi,2,514,train
+537,Non-Fungi,2,515,train
+538,Non-Fungi,2,516,train
+539,Non-Fungi,2,517,train
+540,Non-Fungi,2,518,train
+541,Non-Fungi,2,519,train
+542,Non-Fungi,2,520,train
+543,Non-Fungi,2,521,train
+544,Non-Fungi,2,522,train
+545,Non-Fungi,2,523,train
+546,Non-Fungi,2,524,test
+547,Non-Fungi,2,525,test
+548,Non-Fungi,2,526,val
+549,Non-Fungi,2,527,train
+550,Non-Fungi,2,528,test
+551,Non-Fungi,2,529,train
+552,Non-Fungi,2,530,val
+553,Non-Fungi,2,531,train
+554,Non-Aspergillus Fungi,1,532,test
+555,Non-Aspergillus Fungi,1,533,train
+556,Aspergillus,0,534,val
+557,Non-Fungi,2,535,val
+558,Non-Fungi,2,536,train
+559,Non-Fungi,2,537,train
+560,Non-Fungi,2,538,train
+561,Non-Fungi,2,539,train
+562,Non-Fungi,2,540,test
+563,Non-Fungi,2,541,val
+564,Non-Fungi,2,542,train
+565,Non-Fungi,2,543,train
+566,Non-Fungi,2,544,train
+567,Non-Fungi,2,545,train
+568,Non-Fungi,2,546,test
+569,Non-Fungi,2,547,train
