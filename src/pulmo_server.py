@@ -6,18 +6,23 @@ import uuid
 import numpy as np
 from PIL import Image
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from common import ROOT, NUMERIC, BINARY, CATEGORICAL
-from pulmo_cases import get_case, remember
+from pulmo_cases import ApiError, get_case, remember
 from pulmo_runtime import catalog, clinical_setup, infer, LABELS
 from pulmo_upload import receive_upload
 
 app = FastAPI(title='Pulmo AI Research Workspace')
 WEB = ROOT / 'web'
 app.mount('/static', StaticFiles(directory=WEB), name='static')
+
+
+@app.exception_handler(ApiError)
+def api_error(request: Request, exc: ApiError):
+    return JSONResponse(exc.body(), status_code=exc.status)
 
 
 @app.get('/')
@@ -38,13 +43,15 @@ def overview():
 def demo(case_id: int):
     df, _ = clinical_setup()
     if case_id not in df.index or df.loc[case_id, 'split'] != 'val':
-        raise HTTPException(404, 'Only validation cases are available in the demo.')
+        raise ApiError(404, 'demo_not_validation', 'Only validation cases are available in the demo.', dict(case_id=case_id))
     path = ROOT/'data'/'processed'/f'Case{case_id:03d}.npy'
     if not path.exists():
-        raise HTTPException(404, 'Demo data is not installed.')
+        raise ApiError(404, 'demo_not_installed', 'Demo data is not installed.', dict(case_id=case_id))
     row = df.loc[case_id]
     clinical = {k: (None if isinstance(row[k], (float, np.floating)) and np.isnan(row[k]) else row[k].item() if isinstance(row[k], np.generic) else row[k]) for k in NUMERIC+BINARY+CATEGORICAL}
-    return remember(np.load(path, allow_pickle=False), f'Case {case_id:03d}', clinical=clinical, source='Validation demo')
+    # Demo stacks were preprocessed offline; the source volume (and so its quality metadata) is not shipped.
+    return remember(np.load(path, allow_pickle=False), f'Case {case_id:03d}', clinical=clinical, source='Validation demo',
+                    quality=None)
 
 
 @app.post('/api/upload')

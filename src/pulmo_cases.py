@@ -3,11 +3,24 @@ from collections import OrderedDict
 import threading
 import uuid
 
-from fastapi import HTTPException
-
 from ct_preprocess import K
 
 MAX_CASES = 8
+
+
+class ApiError(Exception):
+    """Error with a stable machine-readable code. The server renders it as
+    {detail, code[, field_errors]}; `detail` stays a displayable string for the UI."""
+
+    def __init__(self, status, code, detail, field_errors=None):
+        super().__init__(detail)
+        self.status, self.code, self.detail, self.field_errors = status, code, detail, field_errors
+
+    def body(self):
+        body = dict(detail=self.detail, code=self.code)
+        if self.field_errors:
+            body['field_errors'] = self.field_errors
+        return body
 
 
 class CaseStore:
@@ -29,7 +42,7 @@ class CaseStore:
     def get(self, token):
         with self._lock:
             if token not in self._cases:
-                raise HTTPException(404, 'Case expired. Upload or load it again.')
+                raise ApiError(404, 'case_expired', 'Case expired. Upload or load it again.')
             return self._cases[token]
 
     def __len__(self):

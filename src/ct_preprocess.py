@@ -20,6 +20,7 @@ OUT = ROOT / "data" / "processed"
 K = 16
 SIZE = 224
 HU_MIN, HU_MAX = -1350, 150  # lung window: level -600, width 1500
+PIPELINE_VERSION = 'lung-window-crop-2.5d-v1'  # bump if any step below changes the model input
 
 
 def load_ras(path):
@@ -81,6 +82,20 @@ def process(path, return_debug=False):
     if return_debug:
         return stack, dict(hu=hu, win=win, mask=m, centres=centres, box=(x0, y0, side), zooms=zooms)
     return stack
+
+
+def summarize(debug):
+    """Small JSON-ready view of process(..., return_debug=True); keeps none of the full volumes.
+
+    Indices refer to the RAS-reoriented volume; sampled_slices are the K axial centres (0-based)."""
+    x0, y0, side = debug['box']
+    return dict(pipeline=PIPELINE_VERSION, window_hu=[HU_MIN, HU_MAX],
+                ras_shape=[int(n) for n in debug['hu'].shape],
+                ras_spacing_mm=[round(float(z), 4) for z in debug['zooms'][:3]],
+                lung_mask_found=bool(debug['mask'].any()),
+                crop=dict(x0=int(x0), y0=int(y0), side=int(side)),
+                sampled_slices=[int(z) for z in debug['centres']],
+                output_shape=[K, 3, SIZE, SIZE])
 
 
 def _job(path):
