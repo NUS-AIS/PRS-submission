@@ -1,48 +1,23 @@
 """Local research UI. Run with uvicorn pulmo_server:app --app-dir src."""
-from collections import OrderedDict
 import io
 import json
-from pathlib import Path
-import tempfile
-import threading
 import uuid
 
-import nibabel as nib
 import numpy as np
 from PIL import Image
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
-from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel, Field
 
 from common import ROOT, NUMERIC, BINARY, CATEGORICAL
-from ct_preprocess import process
+from pulmo_cases import get_case, remember
 from pulmo_runtime import catalog, clinical_setup, infer, LABELS
+from pulmo_upload import receive_upload
 
 app = FastAPI(title='Pulmo AI Research Workspace')
 WEB = ROOT / 'web'
 app.mount('/static', StaticFiles(directory=WEB), name='static')
-CASES = OrderedDict()
-CASE_LOCK = threading.Lock()
-PREPROCESS_LOCK = threading.Lock()
-UPLOAD_LIMIT = 200 * 1024 * 1024
-
-
-def remember(stack, name, **metadata):
-    token = uuid.uuid4().hex
-    with CASE_LOCK:
-        while len(CASES) >= 8:
-            CASES.popitem(last=False)
-        CASES[token] = dict(stack=stack, name=name, **metadata)
-    return dict(token=token, name=name, slices=16, **metadata)
-
-
-def get_case(token):
-    with CASE_LOCK:
-        if token not in CASES:
-            raise HTTPException(404, 'Case expired. Upload or load it again.')
-        return CASES[token]
 
 
 @app.get('/')
@@ -72,48 +47,9 @@ def demo(case_id: int):
     return remember(np.load(path, allow_pickle=False), f'Case {case_id:03d}', clinical=clinical, source='Validation demo')
 
 
-def prepare_upload(path, filename):
-    # Only one full 3D volume is expanded in memory at a time.
-    with PREPROCESS_LOCK:
-        return _prepare_upload(path, filename)
-
-
-def _prepare_upload(path, filename):
-    image = nib.load(path)
-    if len(image.shape) != 3 or min(image.shape) < 3 or np.prod(image.shape, dtype=np.int64) > 64_000_000:
-        raise ValueError('Use a 3D CT volume with at least 3 voxels per axis and at most 64 million voxels.')
-    if not np.isfinite(image.affine).all() or abs(np.linalg.det(image.affine[:3, :3])) < 1e-10:
-        raise ValueError('The NIfTI spatial orientation is invalid.')
-    data = image.get_fdata(dtype=np.float32)
-    if not np.isfinite(data).all() or np.ptp(data) == 0:
-        raise ValueError('The volume contains invalid values or has no intensity variation.')
-    if float(data.min()) > -200 or float(data.max()) < 0:
-        raise ValueError('Expected CT intensities in Hounsfield units. Normalized images are not supported.')
-    shape = list(image.shape)
-    del data, image
-    stack = process(Path(path))
-    return remember(stack, filename, source='Uploaded CT', original_shape=shape)
-
-
 @app.post('/api/upload')
 async def upload(request: Request, filename: str):
-    filename = Path(filename.replace('\\', '/')).name
-    if not filename.lower().endswith(('.nii', '.nii.gz')):
-        raise HTTPException(400, 'Upload a .nii or .nii.gz CT volume.')
-    suffix = '.nii.gz' if filename.lower().endswith('.gz') else '.nii'
-    with tempfile.TemporaryDirectory(prefix='pulmo-') as tmp:
-        path = Path(tmp)/('scan'+suffix)
-        total = 0
-        with path.open('wb') as f:
-            async for chunk in request.stream():
-                total += len(chunk)
-                if total > UPLOAD_LIMIT:
-                    raise HTTPException(413, 'Upload limit is 200 MB.')
-                f.write(chunk)
-        try:
-            return await run_in_threadpool(prepare_upload, str(path), filename)
-        except (ValueError, OSError, EOFError, nib.filebasedimages.ImageFileError) as exc:
-            raise HTTPException(400, f'Unable to read CT: {exc}') from exc
+    return await receive_upload(request.stream(), filename)
 
 
 class Prediction(BaseModel):
