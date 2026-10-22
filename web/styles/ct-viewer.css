@@ -1,0 +1,39 @@
+/* CT viewer: loading stages, scan-quality panel, slice errors. Uses the tokens from style.css. */
+.ct-loading{margin:10px 0 4px;padding:10px 12px;border:1px solid var(--border);border-radius:5px;background:#05243a88}
+.ct-loading.failed{border-color:#c88b3a;background:#462f1a66}
+.ct-stages{display:flex;gap:6px;list-style:none;margin:0;padding:0;font-size:12px;color:var(--muted)}
+.ct-stages li{flex:1;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.ct-stages li:not(:last-child)::after{content:'';flex:1;height:1px;background:var(--border)}
+.ct-stages li::before{content:'';width:9px;height:9px;flex-shrink:0;border-radius:50%;border:1px solid var(--border)}
+.ct-stages li.done{color:#9ff2ff}
+.ct-stages li.done::before{background:var(--cyan);border-color:var(--cyan)}
+.ct-stages li.active{color:var(--text)}
+.ct-stages li.active::before{border-color:var(--cyan);box-shadow:0 0 0 3px #00dff533;animation:ct-pulse 1.2s ease-in-out infinite}
+.ct-stages li.failed{color:#ffcf8a}
+.ct-stages li.failed::before{background:#e0903a;border-color:#e0903a}
+.ct-status{margin:8px 0 0;font-size:12px;line-height:1.5;color:#c4e5f7;overflow-wrap:anywhere}
+.ct-loading.failed .ct-status{color:#ffe5b9}
+.ct-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.ct-actions button,.ct-slice-error button{padding:5px 10px;font-size:12px}
+.ct-retry{border-color:var(--cyan);color:#65efff}
+#scan-view{position:relative;border-radius:4px}
+#scan-view:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+#scan.ct-broken{object-position:-9999px 0;color:transparent}
+.ct-slice-error{position:absolute;left:12px;right:12px;top:24px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border:1px solid #c88b3a;border-radius:5px;background:#2a1c0ee6;color:#ffe5b9;font-size:12px;line-height:1.4}
+.ct-keys{display:block;margin-top:6px;color:var(--muted);font-size:10px;text-align:right}
+.ct-quality{margin:4px 0 10px;border:1px solid var(--border);border-radius:5px;background:#03182a}
+.ct-quality summary{cursor:pointer;padding:9px 12px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.ct-quality summary::after{content:'▸';margin-left:auto;color:var(--muted);transition:transform .15s}
+.ct-quality[open] summary::after{transform:rotate(90deg)}
+.ct-badge{font-size:10px;font-weight:500;padding:2px 6px;border-radius:4px;border:1px solid var(--border);color:var(--muted)}
+.ct-badge.ok{border-color:#1f8f7a;color:#6ff0cf}
+.ct-badge.warn{border-color:#9d7815;color:#ffcf55;background:#5d470b44}
+.ct-quality dl{grid-template-columns:minmax(100px,auto) 1fr;gap:6px 12px;margin:0;padding:2px 12px 8px}
+.ct-quality dt{color:var(--muted)}
+.ct-quality dd{text-align:left;color:var(--text);overflow-wrap:anywhere}
+.ct-warnings{margin:0 12px 8px;padding:8px 10px 8px 26px;border:1px solid #9d7815;border-radius:5px;background:#5d470b44;color:#ffcf55;font-size:12px;line-height:1.5}
+.ct-warnings:empty{display:none}
+.ct-quality .hint{margin:0;padding:0 12px 10px}
+@keyframes ct-pulse{50%{box-shadow:0 0 0 5px #00dff511}}
+@media(prefers-reduced-motion:reduce){.ct-stages li.active::before{animation:none}}
+@media(max-width:700px){.ct-stages li:not(:last-child)::after{display:none}.ct-quality dl{grid-template-columns:1fr}.ct-quality dd{margin-bottom:4px}}
