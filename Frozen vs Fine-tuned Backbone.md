@@ -1,74 +1,75 @@
-# 冻结骨干 vs 全部微调 —— 对比实验
+# Frozen Backbone vs Full Fine-tuning — Comparative Experiment
 
-**问题：** 把 ResNet-18 骨干全部冻结、只训练后面的层，能不能缓解基线的过拟合？
+**Question:** Can freezing the entire ResNet-18 backbone and training only the subsequent layers mitigate overfitting in the baseline?
 
-**结论：** 不能。全部冻结后模型反而**欠拟合**：训练 loss 降不下去，验证集 F1 明显下降（只用 CT 的模型 -0.122，融合模型 -0.013）。
-ImageNet 学到的特征不能直接用在 CT 上，骨干至少要做部分微调。
+**Conclusion:** No. Fully freezing the backbone instead causes **underfitting**: training loss remains high, and validation F1 drops noticeably (-0.122 for the CT-only model and -0.013 for the fusion model).
+Features learned from ImageNet do not transfer directly to CT images; the backbone needs at least partial fine-tuning.
 
-## 实验设置
+## Experimental Setup
 
-两组只差「骨干是否冻结」和学习率，其余完全相同。
+The two groups differ only in whether the backbone is frozen and in the learning rate. All other settings are identical.
 
-| | 全部微调（基线） | 冻结骨干 |
+| | Full fine-tuning (baseline) | Frozen backbone |
 |---|---|---|
-| ResNet-18 骨干 | 全部参与训练 | 全部冻结，BatchNorm 统计量也固定 |
-| 训练的部分 | 骨干 + 分类头（+ 临床分支） | 只训练分类头（+ 临床分支） |
-| 学习率 | 1e-4 | 1e-3（只训练分类头时通常用更大的学习率） |
-| 其他 | 25 个 epoch · AdamW · 类别加权损失 · 基础增强（旋转 ±10°、平移 ±5%） · 同一数据划分 · 种子 0/1/2 | 同左 |
+| ResNet-18 backbone | All layers trainable | Fully frozen, including BatchNorm statistics |
+| Trainable components | Backbone + classification head (+ clinical branch) | Classification head only (+ clinical branch) |
+| Learning rate | 1e-4 | 1e-3 (a higher learning rate is commonly used when training only the classification head) |
+| Other settings | 25 epochs · AdamW · class-weighted loss · basic augmentation (rotation ±10°, translation ±5%) · identical data split · seeds 0/1/2 | Same as baseline |
 
-**选模型的规则不变：** 每个 epoch 看验证集 macro-F1，保留最好的那一轮；比较不同方案**只看验证集**，测试集分数只作参考。
+**The model selection rule remains unchanged:** Evaluate validation macro-F1 after each epoch and retain the best epoch. Compare configurations **using only the validation set**; test scores are provided for reference only.
 
-## 结果总表（3 个种子的均值 ± 标准差）
+## Overall Results (Mean ± Standard Deviation Across 3 Seeds)
 
-| 配置 | 训练参数量 | 验证集 macro-F1 | 测试集 macro-F1 | 测试集平衡准确率 | 最后一轮训练 loss | 最佳 epoch（3 个种子） | 每次耗时（分钟） |
+| Configuration | Trainable parameters | Validation macro-F1 | Test macro-F1 | Test balanced accuracy | Final-epoch training loss | Best epoch (3 seeds) | Time per run (minutes) |
 |---|---|---|---|---|---|---|---|
-| 只用 CT · 全部微调 | 11,242,563 | **0.634 ± 0.019** | 0.595 ± 0.054 | 0.600 ± 0.051 | 0.07 | 1, 21, 19 | 4.2 |
-| 只用 CT · 冻结骨干 | 66,051 | **0.511 ± 0.015** | 0.501 ± 0.012 | 0.501 ± 0.013 | 1.03 | 16, 8, 19 | 2.3 |
-| CT + 临床 · 全部微调 | 11,255,747 | **0.579 ± 0.016** | 0.593 ± 0.045 | 0.600 ± 0.041 | 0.06 | 12, 5, 8 | 4.6 |
-| CT + 临床 · 冻结骨干 | 79,235 | **0.567 ± 0.004** | 0.596 ± 0.012 | 0.597 ± 0.010 | 0.84 | 17, 18, 18 | 2.4 |
+| CT only · Full fine-tuning | 11,242,563 | **0.634 ± 0.019** | 0.595 ± 0.054 | 0.600 ± 0.051 | 0.07 | 1, 21, 19 | 4.2 |
+| CT only · Frozen backbone | 66,051 | **0.511 ± 0.015** | 0.501 ± 0.012 | 0.501 ± 0.013 | 1.03 | 16, 8, 19 | 2.3 |
+| CT + clinical · Full fine-tuning | 11,255,747 | **0.579 ± 0.016** | 0.593 ± 0.045 | 0.600 ± 0.041 | 0.06 | 12, 5, 8 | 4.6 |
+| CT + clinical · Frozen backbone | 79,235 | **0.567 ± 0.004** | 0.596 ± 0.012 | 0.597 ± 0.010 | 0.84 | 17, 18, 18 | 2.4 |
 
-对照：随机猜的 macro-F1 是 0.333；只用临床数据的随机森林，5 折交叉验证约 0.569。
+For reference, random guessing yields a macro-F1 of 0.333; a clinical-only random forest achieves approximately 0.569 in 5-fold cross-validation.
 
-![各配置的验证集和测试集分数](figures/freeze_scores.png)
+![Validation and test scores for each configuration](figures/freeze_scores.png)
 
-## 训练过程
+## Training Dynamics
 
-![训练 loss 和验证集 F1 随 epoch 的变化](figures/freeze_curves.png)
+![Training loss and validation F1 across epochs](figures/freeze_curves.png)
 
-- **实线（全部微调）：** 训练 loss 很快降到接近 0，验证集 F1 却停在 0.6 左右，说明在**过拟合**。
-- **虚线（冻结骨干）：** 训练 loss 只降到 1.03（只用 CT）和 0.84（融合），连训练集都学不好，说明是**欠拟合**。
+- **Solid lines (full fine-tuning):** Training loss quickly approaches 0, while validation F1 plateaus at around 0.6, indicating **overfitting**.
+- **Dashed lines (frozen backbone):** Training loss only falls to 1.03 (CT only) and 0.84 (fusion). The models cannot even fit the training set well, indicating **underfitting**.
 
-## 各类别召回率（测试集，3 个种子平均）
+## Per-Class Recall (Test Set, Averaged Across 3 Seeds)
 
-| 配置 | Aspergillus | Non-Asp. fungi | Non-fungal |
+| Configuration | Aspergillus | Non-Asp. fungi | Non-fungal |
 |---|---|---|---|
-| 只用 CT · 全部微调 | 57% | 47% | 76% |
-| 只用 CT · 冻结骨干 | 43% | 39% | 68% |
-| CT + 临床 · 全部微调 | 62% | 55% | 62% |
-| CT + 临床 · 冻结骨干 | 61% | 51% | 68% |
+| CT only · Full fine-tuning | 57% | 47% | 76% |
+| CT only · Frozen backbone | 43% | 39% | 68% |
+| CT + clinical · Full fine-tuning | 62% | 55% | 62% |
+| CT + clinical · Frozen backbone | 61% | 51% | 68% |
 
-只用 CT 的模型冻结之后，曲霉的召回率从 57% 降到 43%，其他真菌从 47% 降到 39%，非真菌只从 76% 降到 68%。也就是说，冻住的特征最分不清的是两类真菌。
+After freezing the CT-only model, recall drops from 57% to 43% for Aspergillus, from 47% to 39% for other fungi, and from 76% to 68% for non-fungal cases. In other words, the frozen features struggle most to distinguish the two fungal classes.
 
-## 怎么理解
+## Interpretation
 
-1. **两个极端都不好。** 全部微调约 1,124 万个参数，在约 400 个训练病人上会死记训练集；全部冻结只训练约 6.6 万个参数，又学不到区分这三类 CT 所需的特征。合适的做法在两者之间。
-2. **冻结后，融合比只用 CT 高。** 因为临床分支仍在训练。冻结版融合的验证集 F1（0.567）和只用临床的随机森林（0.569）差不多，说明这时候主要是临床数据在起作用，冻住的 CT 特征贡献很少。
-3. **冻结的好处只有速度。** 每次训练从约 4.2 分钟降到约 2.3 分钟，但代价是准确率明显下降。
+1. **Neither extreme works well.** Full fine-tuning updates approximately 11.24 million parameters and memorizes the training set of around 400 patients. Freezing the entire backbone leaves only about 66,000 trainable parameters and fails to learn the features needed to distinguish these three CT classes. A suitable approach lies between the two extremes.
+2. **With a frozen backbone, fusion outperforms CT alone.** The clinical branch is still being trained. The frozen fusion model's validation F1 (0.567) is close to that of the clinical-only random forest (0.569), suggesting that clinical data provides most of the predictive signal while frozen CT features contribute little.
+3. **The only benefit of freezing is speed.** Training time drops from approximately 4.2 to 2.3 minutes per run, at the cost of a substantial drop in accuracy.
 
-## 局限
+## Limitations
 
-- 冻结版只试了一组设置（学习率 1e-3、25 个 epoch）。它的训练 loss 到最后还在缓慢下降，多跑几轮或调大学习率可能会好一些，但要追上全部微调的可能性不大。
-- 测试集只有 83 例，测试集分数的波动比验证集大（冻结版融合模型的标准差达到 0.012），所以结论以验证集为准。
+- Only one frozen-backbone setting was tested (learning rate 1e-3, 25 epochs). Training loss was still slowly decreasing at the end. More epochs or a higher learning rate might help, but matching full fine-tuning seems unlikely.
+- The test set contains only 83 cases, and test scores fluctuate more than validation scores (the frozen fusion model's standard deviation reaches 0.012). Conclusions therefore rely on the validation set.
 
-## 下一步建议
+## Recommended Next Step
 
-**部分冻结：** 冻结前面的层（它们学的是边缘、纹理这类通用特征），只训练最后一层（`layer4`），或最后两层（`layer3` + `layer4`），预计每次 2–3 分钟。这也是 PPT 第 12 页「partial freezing」要做的事。
+**Partial freezing:** Freeze the earlier layers, which learn general features such as edges and textures, and train only the final layer (`layer4`) or the final two layers (`layer3` + `layer4`). Estimated training time is 2–3 minutes per run. This is also the planned "partial freezing" experiment on slide 12 of the presentation.
 
-## 复现
+## Reproduction
 
 ```
-python src/train_ct.py --mode ct --seed 0 --freeze --lr 1e-3        # 冻结版，seed 0/1/2，--mode ct/fusion
-python src/report_freeze.py                                         # 重新生成本文件和两张图
+python src/train_ct.py --mode ct --seed 0 --freeze --lr 1e-3        # Frozen backbone; seeds 0/1/2; --mode ct/fusion
+python src/report_freeze.py                                         # Regenerate this file and both figures
 ```
 
-结果文件：`results/*_aug-basic_seed*_frozen-lr0.001.json`；基线结果：`results/*_aug-basic_seed*.json`（未改动）。
+Result files: `results/*_aug-basic_seed*_frozen-lr0.001.json`; baseline results: `results/*_aug-basic_seed*.json` (unchanged).
+
