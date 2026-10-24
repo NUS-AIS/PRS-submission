@@ -1,7 +1,6 @@
 """Local research UI. Run with uvicorn pulmo_server:app --app-dir src."""
 import io
 import json
-import uuid
 
 import numpy as np
 from PIL import Image
@@ -12,7 +11,8 @@ from pydantic import BaseModel, Field
 
 from common import ROOT, NUMERIC, BINARY, CATEGORICAL
 from pulmo_cases import ApiError, get_case, remember
-from pulmo_runtime import catalog, clinical_setup, infer, LABELS
+from pulmo_prediction import predict_case
+from pulmo_runtime import catalog, clinical_setup, LABELS
 from pulmo_upload import receive_upload
 
 app = FastAPI(title='Pulmo AI Research Workspace')
@@ -68,19 +68,7 @@ class Prediction(BaseModel):
 
 @app.post('/api/predict')
 def predict(body: Prediction):
-    case = get_case(body.token)
-    try:
-        result, cam = infer(case['stack'], body.model, body.clinical, body.explain)
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    except RuntimeError as exc:
-        raise HTTPException(503, 'Inference failed. If GPU memory is full, stop training and retry.') from exc
-    result.update(case=case['name'], source=case['source'], clinical=body.clinical if body.model.startswith('fusion') else {},
-                  severity='Not assessed', disclaimer='Research use only. Not a clinical diagnosis.')
-    run_id = uuid.uuid4().hex
-    # Bind images to this exact inference so changing inputs cannot show a stale explanation.
-    case['prediction'] = dict(id=run_id, cam=cam, result=result)
-    return dict(**result, run_id=run_id, has_overlay=cam is not None)
+    return predict_case(get_case(body.token), body.model, body.clinical, body.explain)
 
 
 @app.get('/api/cases/{token}/slices/{index}')
