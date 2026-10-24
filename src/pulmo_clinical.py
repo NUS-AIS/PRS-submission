@@ -64,6 +64,18 @@ def training_reference():
                 encoding=dict(binary='0 = no, 1 = yes', sex='M / F as coded in the dataset'))
 
 
+def clinical_schema():
+    """Field rules for the input form: kind, required flag, range, unit and the value used when left blank."""
+    ref = training_reference()
+    fields = []
+    for name in FIELDS:
+        kind = 'numeric' if name in NUMERIC else 'binary' if name in BINARY else 'categorical'
+        fields.append(dict(field=name, kind=kind, required=kind != 'numeric', unit=UNITS.get(name),
+                           min=0 if kind == 'numeric' else None, max=AGE_MAX if name == 'Age' else None,
+                           median=ref['medians'].get(name), options=[0, 1] if kind == 'binary' else list(SEXES) if kind == 'categorical' else None))
+    return dict(fields=fields, preprocessing={k: ref[k] for k in ref if k != 'medians'})
+
+
 def _blank(val):
     return val is None or (isinstance(val, str) and not val.strip()) or (isinstance(val, float) and math.isnan(val))
 

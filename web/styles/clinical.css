@@ -1,0 +1,14 @@
+/* Clinical form and prediction input summary. Uses the tokens from style.css. */
+.field .field-error,.field .field-hint{grid-column:1/-1;margin:-4px 0 0;font-size:11px;line-height:1.4}
+.field .field-error{color:#ffb38a}
+.field .field-hint{color:var(--muted)}
+.field input[aria-invalid=true],.field select[aria-invalid=true]{border-color:#ff8a5c;box-shadow:0 0 0 1px #ff8a5c55}
+#clinical-form.fusion .field.required label::after{content:' *';color:var(--cyan)}
+.input-summary{margin:20px 0 6px;border-top:1px solid var(--border);padding-top:14px}
+.input-summary h3{font-size:13px;margin:0 0 8px;font-weight:600}
+.input-summary table{width:100%;border-collapse:collapse;font-size:12px}
+.input-summary th{text-align:left;color:var(--muted);font-weight:500;padding:4px 6px;border-bottom:1px solid var(--border)}
+.input-summary td{padding:4px 6px;border-bottom:1px solid #0d3a54}
+.input-summary .source{font-size:10px;border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--muted);white-space:nowrap}
+.input-summary tr.imputed td{color:#ffd88a}
+.input-summary tr.imputed .source{border-color:#9d7815;color:#ffcf55}

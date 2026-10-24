@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PULMO AI · Research Workspace</title><link rel="stylesheet" href="/static/style.css"></head>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PULMO AI · Research Workspace</title><link rel="stylesheet" href="/static/style.css"><link rel="stylesheet" href="/static/styles/clinical.css"></head>
 <body>
 <aside class="sidebar">
   <a class="brand" href="#training"><svg viewBox="0 0 56 56" aria-hidden="true"><path d="M26 6v23M30 6v23M26 23c-4-7-10-10-14-4C7 25 3 42 8 47c5 4 14-1 17-5V23m5 0c4-7 10-10 14-4 5 6 9 23 4 28-5 4-14-1-17-5V23"/></svg><span>PULMO AI<small>RESEARCH WORKSPACE</small></span></a>
@@ -28,4 +28,6 @@
    <article class="panel prediction"><div class="panel-title"><h2>Prediction Results</h2><span class="badge">RESEARCH</span></div><div id="prediction-empty" class="result-empty"><div>◎</div><h3>Ready when you are</h3><p>Load a CT and run inference to see real model outputs.</p></div><div id="prediction-data" hidden><div class="predicted"><small>Predicted class</small><h3 id="predicted-class"></h3></div><div id="probabilities"></div><div class="warning">⚠ Research output · clinical review required</div><p class="hint">Probabilities are uncalibrated model scores. No validated uncertainty threshold is available.</p><dl><dt>Severity</dt><dd>Not assessed</dd><dt>Localization</dt><dd>Grad-CAM explanation only</dd></dl><button id="export-case">⇩ Export Prediction</button></div><p class="research-note">Research use only. Not a clinical diagnosis.</p></article>
   </div>
  </section>
-</main><script src="/static/app.js"></script></body></html>
+</main><script src="/static/app.js"></script>
+<script src="/static/modules/clinical-form.js"></script>
+<script src="/static/modules/prediction.js"></script></body></html>

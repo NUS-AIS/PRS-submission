@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 from common import ROOT, NUMERIC, BINARY, CATEGORICAL
 from pulmo_cases import ApiError, get_case, remember
+from pulmo_clinical import clinical_schema
 from pulmo_prediction import predict_case
 from pulmo_runtime import catalog, clinical_setup, LABELS
 from pulmo_upload import receive_upload
@@ -37,6 +38,11 @@ def overview():
     return dict(models=rows, labels=LABELS, split=df.split.value_counts().to_dict(),
                 groups=int(df.group.nunique()), numeric=NUMERIC, binary=BINARY,
                 demos=[dict(id=int(i), label=f'Validation case {i:03d}') for i in df.index[df.split == 'val'] if (ROOT/'data'/'processed'/f'Case{i:03d}.npy').exists()])
+
+
+@app.get('/api/clinical')
+def clinical_fields():
+    return clinical_schema()
 
 
 @app.post('/api/demo/{case_id}')
