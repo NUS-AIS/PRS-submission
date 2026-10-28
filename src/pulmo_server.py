@@ -1,9 +1,7 @@
 """Local research UI. Run with uvicorn pulmo_server:app --app-dir src."""
-import io
 import json
 
 import numpy as np
-from PIL import Image
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -15,8 +13,10 @@ from pulmo_clinical import clinical_schema
 from pulmo_prediction import predict_case
 from pulmo_runtime import catalog, clinical_setup, LABELS
 from pulmo_upload import receive_upload
+from pulmo_reports import router as explanation_router, prediction_image
 
 app = FastAPI(title='Pulmo AI Research Workspace')
+app.include_router(explanation_router)
 WEB = ROOT / 'web'
 app.mount('/static', StaticFiles(directory=WEB), name='static')
 
@@ -78,20 +78,6 @@ def predict(body: Prediction):
 
 
 @app.get('/api/cases/{token}/slices/{index}')
-def slice_image(token: str, index: int, run: str = '', overlay: bool = False):
-    case = get_case(token)
-    if not 0 <= index < 16:
-        raise HTTPException(400, 'Slice index must be between 0 and 15.')
-    gray = case['stack'][index, 1]
-    rgb = np.repeat(gray[:, :, None], 3, axis=2).astype(float)
-    if overlay:
-        prediction = case.get('prediction')
-        if not prediction or prediction['id'] != run or prediction['cam'] is None:
-            raise HTTPException(409, 'Run inference for this case before displaying an overlay.')
-        cam = prediction['cam'][index]
-        alpha = .55*cam[:, :, None]
-        heat = np.stack([np.ones_like(cam)*255, 210*(1-cam), np.zeros_like(cam)], axis=2)
-        rgb = rgb*(1-alpha)+heat*alpha
-    buf = io.BytesIO()
-    Image.fromarray(rgb.clip(0,255).astype('uint8')).save(buf, format='PNG')
-    return Response(buf.getvalue(), media_type='image/png', headers={'Cache-Control':'no-store'})
+def slice_image(token: str, index: int, run: str = '', overlay: bool = False, opacity: float = .55):
+    data = prediction_image(get_case(token), index, run, overlay, opacity)
+    return Response(data, media_type='image/png', headers={'Cache-Control': 'no-store'})
