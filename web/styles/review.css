@@ -1,0 +1,70 @@
+.review-panel {
+  margin-top: 20px;
+  padding: 22px;
+}
+.review-options {
+  display: grid;
+  grid-template-columns: minmax(170px, 1fr) minmax(200px, 2fr);
+  gap: 12px 20px;
+  align-items: center;
+  margin: 18px 0;
+  max-width: 800px;
+}
+.review-options input,
+.review-options select {
+  min-width: 0;
+  width: 100%;
+}
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0;
+}
+.review-summary {
+  color: #6be9ff;
+  font-weight: 600;
+}
+.review-panel caption {
+  text-align: left;
+  padding: 12px 0;
+  color: #a1c8df;
+}
+.review-panel table {
+  min-width: 700px;
+}
+.review-panel th,
+.review-panel td {
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+.review-jump {
+  min-width: 42px;
+  padding: 5px 10px;
+}
+.review-panel h3 {
+  margin-top: 24px;
+}
+#review-verify-file {
+  display: block;
+  max-width: 100%;
+  margin: 12px 0;
+}
+.review-panel button:focus-visible,
+.review-panel input:focus-visible,
+.review-panel select:focus-visible {
+  outline: 2px solid #00d8ed;
+  outline-offset: 3px;
+}
+@media (max-width: 650px) {
+  .review-options {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .review-options label:not(:first-child) {
+    margin-top: 8px;
+  }
+  .review-actions button {
+    width: 100%;
+  }
+}
