@@ -14,9 +14,11 @@ from pulmo_prediction import predict_case
 from pulmo_runtime import catalog, clinical_setup, LABELS
 from pulmo_upload import receive_upload
 from pulmo_reports import router as explanation_router, prediction_image
+from pulmo_review_api import router as review_router
 
 app = FastAPI(title='Pulmo AI Research Workspace')
 app.include_router(explanation_router)
+app.include_router(review_router)
 WEB = ROOT / 'web'
 app.mount('/static', StaticFiles(directory=WEB), name='static')
 
