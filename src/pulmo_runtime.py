@@ -6,11 +6,11 @@ import threading
 import numpy as np
 import torch
 from torch import nn
-from torch.nn import functional as F
 from torchvision.models import resnet18
 
 from common import ROOT, RESULTS
 from pulmo_clinical import clinical_setup, clinical_vector, clinical_width
+from pulmo_explain import explain_forward, explanation_status
 
 LABELS = ['Aspergillus infection', 'Other fungal infection', 'Non-fungal infection']
 LOCK = threading.Lock()
@@ -73,21 +73,8 @@ def infer(stack, tag, values, explain=True):
         mean = x.new_tensor([.485, .456, .406]).view(1, 1, 3, 1, 1)
         std = x.new_tensor([.229, .224, .225]).view(1, 1, 3, 1, 1)
         x = (x - mean) / std
-        features = []
-        hook = model.bb.layer4.register_forward_hook(lambda m, i, o: features.append(o)) if explain else None
-        try:
-            with torch.set_grad_enabled(explain), torch.autocast(device_type=device, dtype=torch.float16, enabled=device == 'cuda'):
-                logits = model(x, c)
-            probs = logits.detach().float().softmax(1)[0].cpu().numpy()
-            cam = None
-            if explain:
-                activation = features[0]
-                gradient = torch.autograd.grad(logits[0, int(probs.argmax())], activation)[0]
-                cam = F.relu((gradient.float().mean((2, 3), keepdim=True) * activation.float()).sum(1))
-                cam = F.interpolate(cam[:, None], (224, 224), mode='bilinear', align_corners=False)[:, 0]
-                cam = (cam / cam.max().clamp_min(1e-8)).detach().cpu().numpy()
-            return dict(probabilities=probs.tolist(), predicted_class=LABELS[int(probs.argmax())],
-                        model=tag, device=device, calibrated=False), cam
-        finally:
-            if hook:
-                hook.remove()
+        logits, cam = explain_forward(model, x, c, device, explain)
+        probs = logits.detach().float().softmax(1)[0].cpu().numpy()
+        return dict(probabilities=probs.tolist(), predicted_class=LABELS[int(probs.argmax())],
+                    model=tag, device=device, calibrated=False,
+                    explanation_status=explanation_status(cam)), cam
