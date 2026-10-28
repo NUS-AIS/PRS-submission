@@ -1,0 +1,15 @@
+.explanation-controls {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.explanation-controls label { font-size: 13px; }
+.explanation-controls output { float: right; color: var(--cyan); }
+.explanation-controls input[type=range] { width: 100%; }
+.explanation-controls p { margin: 0; color: var(--muted); font-size: 12px; }
+.explanation-controls > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.explanation-controls button { font-size: 12px; }
+.explanation-controls input:disabled { opacity: .4; }
