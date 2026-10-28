@@ -57,6 +57,17 @@ class GradCamTests(unittest.TestCase):
                 raise RuntimeError('simulated forward failure')
         self.assertEqual(len(layer._forward_hooks), 0)
 
+    def test_diagnostics_measure_explanation_only(self):
+        model = SmallNet().eval()
+        diagnostic = {}
+        logits, maps = explain_forward(model, torch.rand(1, 2, 3, 8, 8),
+                                      torch.ones(1, 1), 'cpu', True, diagnostic)
+        self.assertGreaterEqual(diagnostic['gradcam_ms'], 0)
+        self.assertEqual(diagnostic['target_class_index'], logits.argmax(1).item())
+        self.assertEqual(diagnostic['sampled_positions'], 2)
+        self.assertEqual(diagnostic['zero_signal_positions'],
+                         np.flatnonzero(~maps.any(axis=(1, 2))).tolist())
+
     def test_zero_signal_is_explicit(self):
         model = SmallNet().eval()
         with torch.no_grad():

@@ -73,8 +73,10 @@ def infer(stack, tag, values, explain=True):
         mean = x.new_tensor([.485, .456, .406]).view(1, 1, 3, 1, 1)
         std = x.new_tensor([.229, .224, .225]).view(1, 1, 3, 1, 1)
         x = (x - mean) / std
-        logits, cam = explain_forward(model, x, c, device, explain)
+        diagnostics = dict(requested=explain, gradcam_ms=None)
+        logits, cam = explain_forward(model, x, c, device, explain, diagnostics)
         probs = logits.detach().float().softmax(1)[0].cpu().numpy()
         return dict(probabilities=probs.tolist(), predicted_class=LABELS[int(probs.argmax())],
                     model=tag, device=device, calibrated=False,
-                    explanation_status=explanation_status(cam)), cam
+                    explanation_status=explanation_status(cam),
+                    explanation_diagnostics=diagnostics), cam

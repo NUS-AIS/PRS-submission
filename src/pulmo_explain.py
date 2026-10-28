@@ -1,5 +1,6 @@
 """Predicted-logit Grad-CAM for CT-only and fusion networks."""
 import io
+import time
 from contextlib import contextmanager
 
 import numpy as np
@@ -33,7 +34,7 @@ def gradcam(logits, activation, size=(224, 224)):
     return (maps / maps.max().clamp_min(1e-8)).detach().cpu().numpy()
 
 
-def explain_forward(model, x, clinical, device, explain):
+def explain_forward(model, x, clinical, device, explain, diagnostics=None):
     """Return unchanged logits plus optional maps; caller serializes model access."""
     with torch.set_grad_enabled(explain), torch.autocast(
         device_type=device, dtype=torch.float16, enabled=device == 'cuda'
@@ -42,7 +43,18 @@ def explain_forward(model, x, clinical, device, explain):
             return model(x, clinical), None
         with capture_features(model.bb.layer4) as features:
             logits = model(x, clinical)
+            if device == 'cuda':
+                torch.cuda.synchronize()
+            started = time.perf_counter()
             maps = gradcam(logits, features[0], tuple(x.shape[-2:]))
+            if diagnostics is not None:
+                diagnostics.update(
+                    gradcam_ms=round((time.perf_counter() - started) * 1000, 3),
+                    target_class_index=int(logits.detach().argmax(1).item()),
+                    layer='bb.layer4',
+                    zero_signal_positions=np.flatnonzero(~maps.any(axis=(1, 2))).tolist(),
+                    sampled_positions=int(len(maps)),
+                )
             return logits, maps
 
 

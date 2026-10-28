@@ -58,6 +58,10 @@
       : active.has_overlay
         ? 'Predicted-class attention; not a lesion boundary.'
         : 'Explanation was not requested. Enable it and rerun to obtain a heatmap.';
+    const diagnostic = active.explanation_diagnostics;
+    if (diagnostic?.gradcam_ms != null) {
+      status.textContent += ` Grad-CAM: ${diagnostic.gradcam_ms.toFixed(1)} ms · target: ${active.predicted_class}.`;
+    }
     controls();
   });
   enabled.addEventListener('change', () => {
