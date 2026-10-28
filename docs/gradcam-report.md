@@ -64,6 +64,14 @@ The D suite needs no trained weights. It uses deterministic small CT/fusion netw
 
 Validation on 2026-10-28: the asset-free run discovered 50 tests, with 48 passing and 2 existing A/B asset-dependent tests skipped. After supplying local seed-0 CT/fusion weights and the validation samples under ignored `runs/` and `data/processed/`, all 50 tests passed (no skips). An intermediate run with only Case004 could not run B's missing-value validation-case test; supplying the required validation samples resolved it without changing the test. No validation assets are committed. JavaScript syntax checks passed. Browser interaction has not been acceptance-tested in this submission and should additionally be checked with the workflow above; syntax checking alone is not a browser acceptance test.
 
+## Extended workflow
+
+- The position gallery lets users compare the 16 sampled model inputs and select a position directly.
+- Grad-CAM diagnostics include measured explanation-only milliseconds, target class index and zero-signal position indices (zero-based). CUDA synchronization before timing excludes pending forward work; timing includes gradient calculation, resize and copying the maps to CPU. Disabled explanation has no measured Grad-CAM time.
+- `GET /api/cases/{token}/explanation/bundle?run=...&index=...&opacity=...` downloads a ZIP containing report.json, original.png and overlay.png when available. Image hashes and sizes are included in the report. The archive uses one captured prediction and rejects a replaced run before returning it.
+- Latest-request cancellation protects main-view images and downloads from late responses. Changing inputs clears previews and cancels outstanding requests.
+- Browser acceptance is now recorded in [explanation-browser-acceptance.md](explanation-browser-acceptance.md), superseding the earlier note that only syntax checks had been performed.
+
 ## Commit organization
 
 1. Extract Grad-CAM calculation and preserve runtime compatibility.

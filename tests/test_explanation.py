@@ -16,7 +16,7 @@ from fastapi.testclient import TestClient
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from pulmo_explain import capture_features, explain_forward, gradcam, render_png, explanation_status
-from pulmo_reports import bound_prediction, case_report
+from pulmo_reports import bound_prediction, case_report, explanation_bundle, prediction_image
 from pulmo_server import app
 from pulmo_cases import ApiError, remember, get_case
 
@@ -166,6 +166,16 @@ class ReportTests(unittest.TestCase):
         with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
             self.assertNotIn('overlay.png', archive.namelist())
         self.assertEqual(self.client.get(self.prefix+'/explanation/bundle?run=old').status_code, 409)
+
+    def test_run_replaced_during_zip_render_is_rejected(self):
+        def replace_after_render(*args, **kwargs):
+            result = prediction_image(*args, **kwargs)
+            self.case['prediction'] = {**self.case['prediction'], 'id': 'replacement'}
+            return result
+        with patch('pulmo_reports.prediction_image', side_effect=replace_after_render):
+            with self.assertRaises(ApiError) as error:
+                explanation_bundle(self.case, 'run-one', 0)
+        self.assertEqual(error.exception.code, 'stale_explanation')
 
 
 if __name__ == '__main__':

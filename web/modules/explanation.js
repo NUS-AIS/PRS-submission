@@ -148,6 +148,7 @@
   window.setBusy = (value, message = '') => {
     originalBusy(value, message);
     enabled.disabled = value;
+    if (!value && active) refreshGallery();
   };
 
   async function download(kind) {
