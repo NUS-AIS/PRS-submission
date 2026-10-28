@@ -31,7 +31,8 @@
   const downloads = element('div');
   const report = element('button', 'Download explanation JSON');
   const image = element('button', 'Download selected PNG');
-  downloads.append(report, image);
+  const bundle = element('button', 'Download explanation ZIP');
+  downloads.append(report, image, bundle);
   panel.append(enabledLabel, opacityLabel, opacity, status, downloads);
   $('scan-view').after(panel);
   let active = null;
@@ -40,7 +41,7 @@
 
   function controls() {
     opacity.disabled = !active?.has_overlay;
-    report.disabled = image.disabled = !active || downloading;
+    report.disabled = image.disabled = bundle.disabled = !active || downloading;
   }
   function clear() {
     generation++;
@@ -111,7 +112,7 @@
       const url = URL.createObjectURL(blob);
       const link = element('a');
       link.href = url;
-      link.download = `pulmo-${request.run_id}.${kind === 'report' ? 'json' : 'png'}`;
+      link.download = `pulmo-${request.run_id}.${{report: 'json', image: 'png', bundle: 'zip'}[kind]}`;
       link.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       status.textContent = 'Download ready. Report and image refer to this prediction.';
@@ -123,5 +124,6 @@
   }
   report.onclick = () => download('report');
   image.onclick = () => download('image');
+  bundle.onclick = () => download('bundle');
   controls();
 })();

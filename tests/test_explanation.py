@@ -1,5 +1,8 @@
 """D's CPU tests use deterministic small networks; no downloaded weights required."""
 import io
+import hashlib
+import json
+import zipfile
 import sys
 import unittest
 from pathlib import Path
@@ -143,6 +146,26 @@ class ReportTests(unittest.TestCase):
     def test_replaced_prediction_invalidates_old_report(self):
         self.case['prediction'] = {**self.case['prediction'], 'id': 'run-two'}
         self.assertEqual(self.client.get(self.prefix+'/explanation/report?run=run-one').status_code, 409)
+
+    def test_bundle_files_match_report_hashes(self):
+        response = self.client.get(self.prefix+'/explanation/bundle?run=run-one&index=2')
+        self.assertEqual(response.status_code, 200)
+        with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
+            self.assertEqual(set(archive.namelist()), {'report.json', 'original.png', 'overlay.png'})
+            report = json.loads(archive.read('report.json'))
+            self.assertEqual(report['run_id'], 'run-one')
+            self.assertEqual(report['explanation']['sampled_position'], 3)
+            for name, meta in report['files'].items():
+                data = archive.read(name)
+                self.assertEqual(hashlib.sha256(data).hexdigest(), meta['sha256'])
+                self.assertEqual(len(data), meta['bytes'])
+
+    def test_bundle_without_cam_does_not_fabricate_overlay(self):
+        self.case['prediction']['cam'] = None
+        response = self.client.get(self.prefix+'/explanation/bundle?run=run-one')
+        with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
+            self.assertNotIn('overlay.png', archive.namelist())
+        self.assertEqual(self.client.get(self.prefix+'/explanation/bundle?run=old').status_code, 409)
 
 
 if __name__ == '__main__':

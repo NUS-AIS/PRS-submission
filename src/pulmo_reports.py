@@ -1,5 +1,9 @@
 """Reports and images bound to a single cached prediction, not a fresh inference."""
 import copy
+import hashlib
+import io
+import json
+import zipfile
 
 from fastapi import APIRouter
 from fastapi.responses import Response, JSONResponse
@@ -8,6 +12,26 @@ from pulmo_cases import ApiError, get_case
 from pulmo_explain import explanation_status, render_png
 
 router = APIRouter()
+
+
+def explanation_bundle(case, run, index, opacity=.55):
+    """Capture one immutable prediction reference before rendering any files."""
+    snapshot = {**case, 'prediction': bound_prediction(case, run)}
+    report = case_report(snapshot, run, index, opacity,
+                         overlay=snapshot['prediction']['cam'] is not None)
+    files = {'original.png': prediction_image(snapshot, index, run, False, opacity, True)}
+    if snapshot['prediction']['cam'] is not None:
+        files['overlay.png'] = prediction_image(snapshot, index, run, True, opacity, True)
+    report['files'] = {name: {'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)}
+                       for name, data in files.items()}
+    files['report.json'] = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False).encode('utf-8')
+    archive = io.BytesIO()
+    with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED) as bundle:
+        for name, data in files.items():
+            bundle.writestr(name, data)
+    # If another prediction replaced this run while rendering, do not publish a stale export.
+    bound_prediction(case, run)
+    return archive.getvalue()
 
 
 def bound_prediction(case, run):
@@ -73,5 +97,14 @@ def download_image(token: str, run: str, index: int = 7, opacity: float = .55, o
     data = prediction_image(get_case(token), index, run, overlay, opacity, require_run=True)
     return Response(data, media_type='image/png', headers={
         'Content-Disposition': 'attachment; filename="pulmo-explanation.png"',
+        'Cache-Control': 'no-store',
+    })
+
+
+@router.get('/api/cases/{token}/explanation/bundle')
+def download_bundle(token: str, run: str, index: int = 7, opacity: float = .55):
+    data = explanation_bundle(get_case(token), run, index, opacity)
+    return Response(data, media_type='application/zip', headers={
+        'Content-Disposition': 'attachment; filename="pulmo-explanation.zip"',
         'Cache-Control': 'no-store',
     })
