@@ -39,6 +39,9 @@
   gallery.setAttribute('aria-label', 'Sampled position previews');
   panel.append(gallery);
   $('scan-view').after(panel);
+  const sliceRequest = new ExplanationRequest();
+  const downloadRequest = new ExplanationRequest();
+  let displayedURL = null;
   let active = null;
   let generation = 0;
   let downloading = false;
@@ -49,6 +52,9 @@
   }
   function clear() {
     generation++;
+    sliceRequest.cancel();
+    downloadRequest.cancel();
+    if (displayedURL) { URL.revokeObjectURL(displayedURL); displayedURL = null; }
     active = null;
     gallery.replaceChildren();
     downloading = false;
@@ -105,13 +111,30 @@
       button.setAttribute('aria-pressed', String(index === Number($('slice').value))));
   }
   const originalShowSlice = showSlice;
-  window.showSlice = () => {
-    originalShowSlice();
+  window.showSlice = async () => {
+    sliceRequest.cancel();
     highlightPosition();
-    if (!currentCase || !active || !prediction || active.run_id !== prediction.run_id) return;
-    const url = new URL($('scan').src, location.href);
-    url.searchParams.set('opacity', opacity.value);
-    $('scan').src = url.toString();
+    if (!currentCase || !active || !prediction || active.run_id !== prediction.run_id) {
+      $('scan').hidden = false;
+      originalShowSlice();
+      return;
+    }
+    const version = generation;
+    const index = $('slice').value;
+    $('slice-label').textContent = `Slice ${Number(index) + 1} / ${currentCase.slices || 16}`;
+    const params = new URLSearchParams({run: active.run_id, index,
+      overlay: String($('overlay').checked), opacity: opacity.value});
+    $('scan').hidden = true;
+    try {
+      const blob = await sliceRequest.fetch(`/api/cases/${active.token}/explanation/image?${params}`);
+      if (!blob || version !== generation) return;
+      if (displayedURL) URL.revokeObjectURL(displayedURL);
+      displayedURL = URL.createObjectURL(blob);
+      $('scan').src = displayedURL;
+      $('scan').hidden = false;
+    } catch (error) {
+      if (version === generation) status.textContent = `${error.message} Change position or rerun to retry.`;
+    }
   };
   // app.js registered function references before this module was loaded.
   $('slice').oninput = () => showSlice();
@@ -137,12 +160,8 @@
     downloading = true;
     controls();
     try {
-      const response = await fetch(`/api/cases/${request.token}/explanation/${kind}?${params}`);
-      if (!response.ok) {
-        const error = await response.json();
-        throw Error(error.detail || 'Download failed.');
-      }
-      const blob = await response.blob();
+      const blob = await downloadRequest.fetch(`/api/cases/${request.token}/explanation/${kind}?${params}`);
+      if (!blob) return;
       // A case/input change while fetching must not download an obsolete report.
       if (version !== generation || active !== request) return;
       const url = URL.createObjectURL(blob);
