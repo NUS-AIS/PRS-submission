@@ -34,6 +34,10 @@
   const bundle = element('button', 'Download explanation ZIP');
   downloads.append(report, image, bundle);
   panel.append(enabledLabel, opacityLabel, opacity, status, downloads);
+  const gallery = element('div');
+  gallery.className = 'explanation-gallery';
+  gallery.setAttribute('aria-label', 'Sampled position previews');
+  panel.append(gallery);
   $('scan-view').after(panel);
   let active = null;
   let generation = 0;
@@ -46,6 +50,7 @@
   function clear() {
     generation++;
     active = null;
+    gallery.replaceChildren();
     downloading = false;
     status.textContent = 'Run inference to generate an explanation.';
     controls();
@@ -53,6 +58,7 @@
   document.addEventListener('pulmo:invalidate', clear);
   document.addEventListener('pulmo:prediction', event => {
     active = {...event.detail, token: currentCase.token};
+    queueMicrotask(() => { if (active) refreshGallery(); });
     const state = active.explanation_status;
     status.textContent = state === 'zero_signal'
       ? 'No positive Grad-CAM signal. This does not mean no disease.'
@@ -70,9 +76,38 @@
     invalidate();
   });
 
+  function refreshGallery() {
+    gallery.replaceChildren();
+    if (!active) return;
+    const count = currentCase.slices || 16;
+    for (let index = 0; index < count; index++) {
+      const button = element('button');
+      button.type = 'button';
+      button.setAttribute('aria-label', `Show sampled position ${index + 1}`);
+      button.setAttribute('aria-pressed', String(index === Number($('slice').value)));
+      const thumb = element('img');
+      thumb.alt = `Sampled position ${index + 1}`;
+      thumb.loading = 'lazy';
+      const params = new URLSearchParams({run: active.run_id, index,
+        overlay: String(active.has_overlay && $('overlay').checked), opacity: opacity.value});
+      thumb.src = `/api/cases/${active.token}/explanation/image?${params}`;
+      thumb.onerror = () => { thumb.hidden = true; button.title = 'Preview unavailable. Rerun if this case expired.'; };
+      button.append(thumb, element('span', String(index + 1)));
+      button.onclick = () => {
+        $('slice').value = index;
+        $('slice').dispatchEvent(new Event('input', {bubbles: true}));
+      };
+      gallery.append(button);
+    }
+  }
+  function highlightPosition() {
+    [...gallery.children].forEach((button, index) =>
+      button.setAttribute('aria-pressed', String(index === Number($('slice').value))));
+  }
   const originalShowSlice = showSlice;
   window.showSlice = () => {
     originalShowSlice();
+    highlightPosition();
     if (!currentCase || !active || !prediction || active.run_id !== prediction.run_id) return;
     const url = new URL($('scan').src, location.href);
     url.searchParams.set('opacity', opacity.value);
@@ -80,7 +115,8 @@
   };
   // app.js registered function references before this module was loaded.
   $('slice').oninput = () => showSlice();
-  $('overlay').onchange = () => showSlice();
+  $('overlay').onchange = () => { showSlice(); refreshGallery(); };
+  opacity.onchange = refreshGallery;
   opacity.oninput = () => {
     amount.textContent = `${Math.round(Number(opacity.value) * 100)}%`;
     showSlice();

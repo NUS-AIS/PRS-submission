@@ -13,3 +13,17 @@
 .explanation-controls > div { display: flex; flex-wrap: wrap; gap: 8px; }
 .explanation-controls button { font-size: 12px; }
 .explanation-controls input:disabled { opacity: .4; }
+.explanation-controls > .explanation-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.explanation-gallery button { min-width: 0; padding: 3px; }
+.explanation-gallery img { display: block; width: 100%; aspect-ratio: 1; }
+.explanation-gallery span { display: block; text-align: center; }
+.explanation-gallery [aria-pressed=true] { border: 2px solid var(--cyan); }
+@media (max-width: 600px) {
+  .explanation-controls > .explanation-gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
